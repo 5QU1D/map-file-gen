@@ -140,8 +140,13 @@ int main() {
         << rivers << " rivers." << std::endl;
     std::cout << "The remaining " << unallocated << " tiles will be left blank." << std::endl;
 
-    char types[height][width];
-    int extremes[height][width];
+    // char types[height][width];
+    // int extremes[height][width];
+
+    // std::vector<char> [height][width];
+
+    std::vector<std::vector<char>> types(height, std::vector<char>(width));
+    std::vector<std::vector<int>> extremes(height, std::vector<int>(width));
 
     //seed the random number generator with the current time for better pseudo-randomness
     srand(time(0));
