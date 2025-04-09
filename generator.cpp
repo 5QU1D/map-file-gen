@@ -3,7 +3,8 @@
 #include <string>
 
 #include <vector>
-#include <array>
+#include <random>
+#include <algorithm>
 
 #include "prettyheader.h"
 
@@ -34,7 +35,6 @@ int main() {
     std::cout << "Unallocated tiles will be marked as blank. You are encouraged to leave some blank tiles." << std::endl << std::endl;
 
     std::cout << "You will now be prompted for input." << std::endl << std::endl;
-
 
     int height = 0;
     int width = 0;
@@ -140,73 +140,81 @@ int main() {
         << rivers << " rivers." << std::endl;
     std::cout << "The remaining " << unallocated << " tiles will be left blank." << std::endl;
 
-    // char types[height][width];
-    // int extremes[height][width];
-
-    // std::vector<char> [height][width];
-
-    std::vector<std::vector<char>> types(height, std::vector<char>(width));
-    std::vector<std::vector<int>> extremes(height, std::vector<int>(width));
+    std::vector<std::vector<char>> types(height, std::vector<char>(width,'P'));
+    std::vector<std::vector<int>> extremes(height, std::vector<int>(width, 0));
 
     //seed the random number generator with the current time for better pseudo-randomness
-    srand(time(0));
+    std::mt19937 gen(time(0));
+
+    std::vector<char> poptiles;
+    for (int i = 0; i < settlements; i++){
+        poptiles.push_back('S');
+    }
+    for (int i = 0; i < forests; i++){
+        poptiles.push_back('F');
+    }
+    for (int i = 0; i < valleys; i++){
+        poptiles.push_back('V');
+    }
+    for (int i = 0; i < rivers; i++){
+        poptiles.push_back('R');
+    }
+    for (int i = 0; i < mountains; i++){
+        poptiles.push_back('M');
+    }
+
+    //shuffle poptiles vector for pseudo-random occurrence of each tile instance
+    // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+    // https://www.pcg-random.org/posts/bounded-rands.html
+    std::shuffle(poptiles.begin(), poptiles.end(), gen);
 
     int counter = totalTiles - unallocated;
 
+    std::uniform_int_distribution<> rowDist(0,height-1);
+    std::uniform_int_distribution<> colDist(0,width-1);
+    std::uniform_int_distribution<> extrDist(1,5);
+
     //was going to make a separate function, but passing a 2D array into a function with variable characteristics is a no-go
-    
+    // std::cerr << "entering loop" << std::endl;
     while(counter > 0) {
         int row;
         int col;
         
         while (true) {
-            row = rand() % (height-1);
-            col = rand() % (width-1);
-            if (types[row][col] == NULL) break;
+            row = rowDist(gen);
+            col = colDist(gen);
+            if (types[row][col] == 'P') break;
         }
 
-        std::vector<char> poptiles;
-        for (int i = 0; i < settlements; i++){
-            poptiles.push_back('S');
-        }
-        for (int i = 0; i < forests; i++){
-            poptiles.push_back('F');
-        }
-        for (int i = 0; i < valleys; i++){
-            poptiles.push_back('V');
-        }
-        for (int i = 0; i < rivers; i++){
-            poptiles.push_back('R');
-        }
-        for (int i = 0; i < mountains; i++){
-            poptiles.push_back('M');
-        }
+        // std::cerr << "tile selected" << std::endl;
 
-        std::vector<char> shufftiles;
-        //shuffle poptiles vector (into shufftiles vector) for pseudo-random occurrence of each tile instance
-        // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-        // https://www.pcg-random.org/posts/bounded-rands.html
-        // how random do i really need it?
-        
+        int extremeness = extrDist(gen);
 
-        int extremeness = (rand() % 5) + 1;
-
-        types[row][col] = shufftiles.at(counter-1);
+        types[row][col] = poptiles.at(counter-1);
         extremes[row][col] = extremeness;
 
         counter--;
     }
-
+    // std::cerr << "exited tile select loop" << std::endl;
     // fill in "unallocated" tiles for the blank value
-    for (int i = 0; i <= height; i++){
-        for (int j = 0; j <= width; j++){
-            if (types[height][width] == NULL) {
-                types[height][width] = '0';
-                extremes[height][width] = 0;
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            if (types[i][j] == 'P') {
+                types[i][j] = '0';
             }
         }
     }
-    
+    // std::cerr << "entering printing" << std::endl;
+    for (int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+            if(j==width-1){
+                std::cout << "()" << types[i][j] << "," << extremes[i][j] << ")";
+            }
+            else std::cout << "()" << types[i][j] << "," << extremes[i][j] << ") ";
+        }
+        std::cout << std::endl;
+    }
+
     //create each string
     //prompt for save location
         //create file
