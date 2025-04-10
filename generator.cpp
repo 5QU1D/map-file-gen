@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <filesystem>
 
 #include "prettyheader.h"
 
@@ -185,7 +185,6 @@ int main() {
             col = colDist(gen);
             if (types[row][col] == 'P') break;
         }
-
         // std::cerr << "tile selected" << std::endl;
 
         int extremeness = extrDist(gen);
@@ -204,23 +203,39 @@ int main() {
             }
         }
     }
+
+    std::string filename = "";
+    //prompt for save location
+    std::cout << "Name your file: ";
+    std::cin >> filename;
+    if(filename.find(".txt")==std::string::npos) filename += ".txt";
+    std::ofstream fstm(filename);
+
+    //create file or catch error / confirm file creation
+    while(!fstm.is_open()){
+        std::cout << "Error creating file of name " << filename << " ; Please re-enter file name." << std::endl;
+        std::cout << "File name: ";
+        std::cin >> filename;
+        if(!filename.find(".txt")) filename = filename + ".txt";
+        std::ofstream fstm(filename);
+    }
+    
     // std::cerr << "entering printing" << std::endl;
+    //create each string & add to file
+    fstm << height << " " << width << std::endl;
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
             if(j==width-1){
-                std::cout << "()" << types[i][j] << "," << extremes[i][j] << ")";
+                fstm << "(" << types[i][j] << "," << extremes[i][j] << ")";
             }
-            else std::cout << "()" << types[i][j] << "," << extremes[i][j] << ") ";
+            else fstm << "(" << types[i][j] << "," << extremes[i][j] << ") ";
         }
-        std::cout << std::endl;
+        fstm << std::endl;
     }
 
-    //create each string
-    //prompt for save location
-        //create file
-    //add each string to the file
-    //confirm file creation
-        //return path to file
+    //return path to file
+    namespace fs = std::filesystem;
+    std::cout << "Your file has been created at the following path: " << fs::current_path().string() << "/" << filename << std::endl;
 
     return 0;
 }
