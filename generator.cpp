@@ -222,7 +222,7 @@ int main() {
     
     // std::cerr << "entering printing" << std::endl;
     //create each string & add to file
-    fstm << height << " " << width << std::endl;
+    fstm << width << " " << height << std::endl;
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
             if(j==width-1){
