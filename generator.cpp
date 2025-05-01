@@ -143,6 +143,13 @@ int main() {
     std::vector<std::vector<char>> types(height, std::vector<char>(width,'P'));
     std::vector<std::vector<int>> extremes(height, std::vector<int>(width, 0));
 
+    // for (unsigned i = 0; i < types.size() ; i++){
+    //     for (unsigned j = 0; types[0].size(); j++){
+    //         std::cout << types[i][j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
     //seed the random number generator with the current time for better pseudo-randomness
     std::mt19937 gen(time(0));
 
@@ -194,7 +201,7 @@ int main() {
 
         counter--;
     }
-    // std::cerr << "exited tile select loop" << std::endl;
+    std::cerr << "exited tile select loop" << std::endl;
     // fill in "unallocated" tiles for the blank value
     for (int i = 0; i < height; i++){
         for (int j = 0; j < width; j++){
@@ -220,7 +227,7 @@ int main() {
         std::ofstream fstm(filename);
     }
     
-    // std::cerr << "entering printing" << std::endl;
+    std::cerr << "entering printing" << std::endl;
     //create each string & add to file
     fstm << width << " " << height << std::endl;
     for (int i = 0; i < height; i++){
